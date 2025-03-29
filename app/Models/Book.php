@@ -10,5 +10,6 @@ class Book extends Model
     use HasFactory;
 
     protected $table = 'books';
-    protected $fillable = ['title', 'author', 'description', 'status'];   
+    protected $fillable = ['title', 'author', 'description', 'status'];
+    public $timestamps = true; // Ensure timestamps are managed by Eloquent
 }
