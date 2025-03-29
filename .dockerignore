@@ -1,0 +1,25 @@
+# Ignore the .git folder and other version control files
+.git
+.gitignore
+
+# Ignore the vendor directory (if dependencies are installed in the build process)
+vendor/
+
+# Ignore the node_modules folder (if you have a frontend)
+node_modules/
+
+# Ignore the .env file (if you don't want to include it in the final image)
+.env
+
+# Ignore the volumes directories
+Application/db_vol/
+Application/log/
+
+# Ignore the Laravel storage folder (logs, cache, etc.)
+storage/
+
+# Other files or directories you want to ignore
+docker-compose.yml
+Dockerfile
+README.md
+
