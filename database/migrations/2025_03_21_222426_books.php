@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('author', 50);
             $table->text('description');            
             $table->boolean('status')->default(0);
+            $table->timestamps(); // Add timestamps
         });
         
         // import data from sql file backup
