@@ -166,6 +166,8 @@ If you prefer to use Docker for an isolated development environment, follow thes
     MARIADB_PASSWORD=idontknow
     MARIADB_DATABASE=bookstore
     MARIADB_ROOT_PASSWORD=ravenclaw
+    SYSTEM_USER="mario"
+    SYSTEM_GROUP="mario"
     ```
 
     Open the `Application/MariaDB/.env` file and configure the database environment variables.
