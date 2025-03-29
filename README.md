@@ -51,7 +51,7 @@ Follow these steps to set up the project in your local environment:
 1.  **Clone the repository:**
 
     ```bash
-    git clone [https://github.com/TEAM3-ED9/magical-bookstore-api.git](https://github.com/TEAM3-ED9/magical-bookstore-api.git)
+    git clone git clone https://github.com/TEAM3-ED9/magical-bookstore-api.git
     ```
 
 2.  **Navigate to the project directory:**
@@ -133,7 +133,7 @@ If you prefer to use Docker for an isolated development environment, follow thes
 2.  **Clone the repository:**
 
     ```bash
-    git clone [https://github.com/TEAM3-ED9/magical-bookstore-api.git](https://github.com/TEAM3-ED9/magical-bookstore-api.git)
+    git clone https://github.com/TEAM3-ED9/magical-bookstore-api.git
     ```
 
 3.  **Navigate to the project directory:**
@@ -154,15 +154,53 @@ If you prefer to use Docker for an isolated development environment, follow thes
 
 5.  **Configure environment variables for the MariaDB database (if necessary):**
 
-    * Copy the `.env-example` file in `Application/MariaDB/` to `.env`:
+    Copy the `.env-example` file in `Application/MariaDB/` to `.env`:
 
-        ```bash
-        cp Application/MariaDB/.env-example Application/MariaDB/.env
-        ```
+    ```bash
+    cp Application/MariaDB/.env-example Application/MariaDB/.env
+    ```
 
-    * Open the `Application/MariaDB/.env` file and configure the database environment variables.
+    This is an example for a MariaDB enviroment
+    ```bash
+    MARIADB_USER=admin
+    MARIADB_PASSWORD=idontknow
+    MARIADB_DATABASE=bookstore
+    MARIADB_ROOT_PASSWORD=ravenclaw
+    ```
 
-6.  **Build and run the Docker containers:**
+    Open the `Application/MariaDB/.env` file and configure the database environment variables.
+
+    This is an example for a Laravel enviroment
+    ```bash
+    DB_CONNECTION=mariadb
+    DB_HOST=db
+    DB_PORT=3306
+    DB_DATABASE=bookstore
+    DB_USERNAME=root
+    DB_PASSWORD=ravenclaw
+    ```
+
+6.  **Create folders for volumens in the Docker containers:**
+
+    ```bash
+    mkdir Application/{db_vol,log}
+    ```
+
+    This will creates folder db_val and log inside **Application** folder
+
+    ```bash
+    mkdir Application/log/{apache,db,php}
+    ```
+
+    This will create folders apache, db and php inside **log** folder
+
+7.  **Change permission to Application folder to have access to the volumen:**
+
+    ```bash
+    chmod -R 755 Application
+    ```
+
+8.  **Build and run the Docker containers:**
 
     ```bash
     docker-compose up -d --build
