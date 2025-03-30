@@ -208,19 +208,21 @@ If you prefer to use Docker for an isolated development environment, follow thes
 
     This will build the Docker images (if it's the first time) and run the containers in the background.
 
+9. **Set up**
+    You must enter in the php container
+    ```bash
+    docker exec -it php bash
+    ``` 
+    and run:
+    ```bash
+    composer install
+    php artisan key:generate
+    php artisan migrate
+    ```
+
 ## 🚀 Usage
 
-Once the server is running (either locally or with Docker), you must enter in the php container:
-```bash
-docker exec -it php bash
-``` 
-and run:
-```bash
-composer install
-php artisan key:generate
-php artisan migrate
-```
-After that, you must be able to see the project at `http://localhost`.
+Once the server is running (either locally or with Docker), you can access the application through your browser at `http://localhost:8000`.
 
 To interact with the API, consult the interface (API) documentation in `docs/interface-agreement-api.md` to learn about the available endpoints, HTTP methods, and data formats.
 
