@@ -208,7 +208,8 @@ If you prefer to use Docker for an isolated development environment, follow thes
 
     This will build the Docker images (if it's the first time) and run the containers in the background.
 
-9. **Set up**
+9. **Set up:**
+    
     You must enter in the php container
     ```bash
     docker exec -it php bash
