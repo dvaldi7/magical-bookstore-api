@@ -220,7 +220,8 @@ composer install
 php artisan key:generate
 php artisan migrate
 ```
-After that, you must be able to see the project at `http://localhost`
+After that, you must be able to see the project at `http://localhost`.
+
 To interact with the API, consult the interface (API) documentation in `docs/interface-agreement-api.md` to learn about the available endpoints, HTTP methods, and data formats.
 
 ## 🤝 Contribution
