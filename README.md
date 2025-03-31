@@ -208,6 +208,19 @@ If you prefer to use Docker for an isolated development environment, follow thes
 
     This will build the Docker images (if it's the first time) and run the containers in the background.
 
+9. **Set up:**
+    
+    You must enter in the php container
+    ```bash
+    docker exec -it php bash
+    ``` 
+    and run:
+    ```bash
+    composer install
+    php artisan key:generate
+    php artisan migrate
+    ```
+
 ## 🚀 Usage
 
 Once the server is running (either locally or with Docker), you can access the application through your browser at `http://localhost:8000`.
