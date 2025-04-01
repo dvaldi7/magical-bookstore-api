@@ -21,7 +21,11 @@ services:
   web:
       depends_on:
         - db
-      build: .
+      build:
+        context: .
+        args:
+          SYSTEM_USER: ${SYSTEM_USER}
+          SYSTEM_GROUP: ${SYSTEM_GROUP}
       container_name: php
       ports:
       - "80:80"
