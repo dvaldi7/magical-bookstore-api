@@ -11,13 +11,24 @@ class BookController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        header('Content-Type: application/json');
-        header('Access-Control-Allow-Origin: *');
+    {                
+        try {
+            $books = Book::all();
+            
+            if($books->isEmpty()) {
+                return response()->json([
+                    'message' => 'No books found'
+                ], 404); // 404 = Not Found
+            }
 
-        $books = Book::all();    
+            return response()->json($books, 200); // 200 = OK
 
-        echo json_encode($books);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'An error occurred while fetching books',
+                'error' => $th->getMessage()
+            ], 500); // 500 = Internal Server Error
+        }
     }
 
     /**
