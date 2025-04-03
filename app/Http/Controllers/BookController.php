@@ -12,7 +12,7 @@ class BookController extends Controller
      */
     public function index()
     {                
-        try {
+        try {            
             $books = Book::all();
             
             if($books->isEmpty()) {
@@ -26,6 +26,81 @@ class BookController extends Controller
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'An error occurred while fetching books',
+                'error' => $th->getMessage()
+            ], 500); // 500 = Internal Server Error
+        }
+    }
+
+    /**
+     * Search books by author.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function searchByAuthor(Request $request)
+    {
+        $author = $request->input('author');
+
+        try {
+            if (!$author) {
+                return response()->json([
+                    'message' => 'Author parameter is required'
+                ], 400); // 400 = Bad Request
+            }
+
+            $books = Book::where('author', 'LIKE', "%$author%")->get();
+
+            if ($books->isEmpty()) {
+                return response()->json([
+                    'message' => 'No books found for the given criteria'
+                ], 404); // 404 = Not Found
+            }
+
+            return response()->json($books, 200); // 200 = OK
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'An error occurred while searching for books',
+                'error' => $th->getMessage()
+            ], 500); // 500 = Internal Server Error
+        }
+    }
+
+    /**
+     * Search books by title.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function searchByTitle(Request $request)
+    {
+        $title = $request->input('title');
+
+        // Check if the title parameter was provided
+        if (!$title) {
+            return response()->json([
+                'message' => 'Title parameter is required'
+            ], 400); // 400 = Bad Request
+        }
+
+        try {
+            // Search for books with the given title
+            $books = Book::where('title', 'LIKE', "%$title%")->get(['id', 'title', 'author']);
+
+            // Check if any books were found
+            if ($books->isEmpty()) {
+                return response()->json([
+                    'message' => 'No books found for the given criteria'
+                ], 404); // 404 = Not Found
+            }
+
+            // Return the found books
+            return response()->json($books, 200); // 200 = OK
+
+        } catch (\Throwable $th) {
+            // Return an error message if an exception was thrown
+            return response()->json([
+                'message' => 'An error occurred while searching for books',
                 'error' => $th->getMessage()
             ], 500); // 500 = Internal Server Error
         }
