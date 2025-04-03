@@ -127,7 +127,22 @@ class BookController extends Controller
      */
     public function show(Book $book, $id)
     {
-        //
+        try {            
+            $books = Book::find($id);
+            if (!$books) {
+                return response()->json([
+                    'message' => 'Book not found'
+                ], 404); // 404 = Not Found
+            }            
+
+            return response()->json($books, 200); // 200 = OK
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'An error occurred while fetching books',
+                'error' => $th->getMessage()
+            ], 500); // 500 = Internal Server Error
+        }
     }
 
     /**
