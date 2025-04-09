@@ -22,7 +22,7 @@ This project is a magical book API inspired by the Harry Potter universe. It all
 The detailed technical documentation of the project is located in the `docs/` folder and includes:
 
 * **Entity-Relationship Diagram (ERD) of the database:** [docs/entity-relationship-diagram.md](docs/entity-relationship-diagram.md)
-* **Interface Agreement (API) - Frontend Communication:** [docs/interface-agreement-api.md](docs/interface-agreement-api.md)
+* **Application Interface Agreement (API):** [docs/interface-agreement-api.md](docs/interface-agreement-api.md)
 * **Commit Convention:** We are using the Conventional Commits convention for a cleaner and more readable commit history. [https://www.conventionalcommits.org/en/v1.0.0/](https://www.conventionalcommits.org/en/v1.0.0/)
 
 ## 📚 Recommended Documentation
