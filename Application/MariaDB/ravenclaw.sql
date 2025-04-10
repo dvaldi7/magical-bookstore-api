@@ -25,11 +25,14 @@ DROP TABLE IF EXISTS `books`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `books` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `category_id` int(11) DEFAULT NULL,
   `title` varchar(100) NOT NULL,
   `author` varchar(50) NOT NULL,
   `description` text NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `books_category_id_index` (`category_id`),
+  CONSTRAINT `books_category_id_foreign` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -40,36 +43,36 @@ CREATE TABLE `books` (
 LOCK TABLES `books` WRITE;
 /*!40000 ALTER TABLE `books` DISABLE KEYS */;
 INSERT INTO `books` VALUES
-(1,'The Book of Forgotten Spells','Elara Moonshadow','The first rule of spellcasting is not power, but intent. A whispered word with pure purpose will always overcome a shouted incantation filled with doubt.',1),
-(2,'Elemental Bindings','Thorne Emberwright','Fire responds not to command but to respect. Approach the flame with humility, and it shall dance within your palm without burning.',0),
-(3,'Whispers of the Ancient Grimoire','Lysander Nightshade','The text seemed to shift beneath my fingertips, rearranging itself into patterns that spoke directly to my bloodline.',1),
-(4,'Runes of the Elder Path','Freya Stoneheart','Each rune carries not just a meaning but a memory, etched into the very fabric of reality by those who walked between worlds.',1),
-(5,'Familiar Bonds: A Wizard\'s Guide','Barnabas Whiskerwick','The connection between a mage and familiar transcends mere companionship—it is a merging of souls across species, a bridge between diverse magics.',0),
-(6,'Potions for the Perplexed Mind','Winifred Brewbane','Clarity of thought requires not just the proper ingredients, but timing that aligns with the lunar phases. Begin your distillation only when Sirius rises.',1),
-(7,'The Void Between Stars','Orion Blackthorn','Magic flows like rivers between celestial bodies. Those who learn to navigate these currents can travel beyond physical limitations.',0),
-(8,'Herbology of Phantom Flora','Ivy Thornrose','The ghost orchid blooms only at midnight during the autumn equinox, its petals collecting moonlight that can later be harvested for illumination spells.',1),
-(9,'The Lost Secrets of Crystal Magic','Cassandra Clearwater','Each crystal resonates at a frequency that corresponds to different planes of existence. The amethyst, for example, vibrates in harmony with the dream realm.',1),
-(10,'Temporal Enchantments','Chronos Timewinder','To bend time is not to break it, but to understand that past, present, and future exist simultaneously, separated only by our limited perception.',0),
-(11,'The Illusionist\'s Reality','Mirage Shadowweaver','The strongest illusions are not those that deceive the eyes, but those that whisper truths to the heart that the mind is eager to believe.',1),
-(12,'Secrets of the Blood Moon Rituals','Crimson Nightshade','When the moon bleeds red, the veil between worlds thins. Speak not your true name during these hours, lest wandering spirits claim it.',1),
-(13,'The Necromancer\'s Ethical Dilemmas','Mortimer Graves','The distinction between communing with the deceased and disturbing their rest lies in intention and respect. Always ask, never command.',0),
-(14,'Transmutation Fundamentals','Aurelius Goldmaker','All matter yearns to be something else. The alchemist merely listens to these whispers and facilitates the object\'s true desire.',1),
-(15,'The Djinn\'s Bargain','Zephyr Wishbinder','The ancient pact requires precise language above all else. Remember that \'until\' does not mean the same as \'unless\', and a misplaced comma may cost your soul.',1),
-(16,'Secrets of Shadow Binding','Umbra Darkweaver','Shadows are not absences of light but manifestations of another realm pressing against our own. They can be gathered and woven like the finest silk.',0),
-(17,'The Dragon Speaker\'s Codex','Drakonos Flameheart','The draconic tongue contains seventeen words for \'treasure\', each denoting not just the composition of the hoard but the manner in which it was acquired.',1),
-(18,'Mystical Beasts and Where Their Powers Lie','Fauna Beastwhisperer','The manticore\'s sting carries not just venom but memories. Those who survive an encounter often report vivid recollections of lives they never lived.',0),
-(19,'The Astral Traveler\'s Handbook','Celeste Starwalker','Anchoring your physical form before projection is essential. Three drops of blood on silver ensures your spirit can find its way home.',1),
-(20,'Secrets of the Fae Courts','Puck Wildbloom','Never eat what is offered in the Fae realm, unless you wish to return. Time moves differently beneath their twilight sky—a minute there could be years here.',1),
-(21,'Urban Magic: Spells for the Modern Witch','Rowan Citycraft','Subway tunnels follow the same patterns as ancient ley lines. The rumble of trains strengthens earth magic, while the electrical systems amplify lightning spells.',0),
-(22,'Divination Through Dreams','Luna Dreamseeker','True prophetic visions arrive not during REM sleep but in the moments between wakefulness and slumber, when the mind is most receptive to cosmic whispers.',1),
-(23,'Charms for the Charming','Dazzle Spellsmith','Enchantment is not about domination but gentle suggestion. The subject should never feel the nudge, only the natural desire to follow a new course.',1),
-(24,'The Golem Maker\'s Manual','Clay Animatriss','Life requires more than shape and movement. The true secret lies in the name, written on parchment and placed within the heart of your creation.',0),
-(25,'Healing Beyond the Physical Realm','Althea Soulsoothe','Wounds of the spirit manifest in the body. To truly heal, one must first identify which emotional injury has taken physical form.',1),
-(26,'The Art of Weather Working','Storm Skydancer','The winds have memories and grudges. Always introduce yourself to a new sky before attempting to change its temperament.',1),
-(27,'Forbidden Transformations','Lupine Moonwalker','The first transformation is always the most painful. Your bones will remember their original shape and fight to return—you must convince them of their new purpose.',0),
-(28,'The Book of Infinite Doorways','Portal Keymaster','Every mirror faces another mirror somewhere in the cosmos. Find the correct angle of reflection, and you can step between them.',1),
-(29,'Curses and Their Ethical Applications','Hex Justiceweaver','A true curse is not cast in anger but in balance. It should provide opportunity for redemption, lest it rebound upon the caster threefold.',1),
-(30,'The Witch\'s Garden: Magical Botany','Flora Rootwielder','Plants speak in chemical language. Learn to translate their signals, and they will warn you of dangers, point to hidden treasures, and reveal ancient secrets of the soil.',0);
+(1,2,'The Book of Forgotten Spells','Elara Moonshadow','The first rule of spellcasting is not power, but intent. A whispered word with pure purpose will always overcome a shouted incantation filled with doubt.',1),
+(2,1,'Elemental Bindings','Thorne Emberwright','Fire responds not to command but to respect. Approach the flame with humility, and it shall dance within your palm without burning.',0),
+(3,1,'Whispers of the Ancient Grimoire','Lysander Nightshade','The text seemed to shift beneath my fingertips, rearranging itself into patterns that spoke directly to my bloodline.',1),
+(4,3,'Runes of the Elder Path','Freya Stoneheart','Each rune carries not just a meaning but a memory, etched into the very fabric of reality by those who walked between worlds.',1),
+(5,4,'Familiar Bonds: A Wizard\'s Guide','Barnabas Whiskerwick','The connection between a mage and familiar transcends mere companionship—it is a merging of souls across species, a bridge between diverse magics.',0),
+(6,2,'Potions for the Perplexed Mind','Winifred Brewbane','Clarity of thought requires not just the proper ingredients, but timing that aligns with the lunar phases. Begin your distillation only when Sirius rises.',1),
+(7,3,'The Void Between Stars','Orion Blackthorn','Magic flows like rivers between celestial bodies. Those who learn to navigate these currents can travel beyond physical limitations.',0),
+(8,2,'Herbology of Phantom Flora','Ivy Thornrose','The ghost orchid blooms only at midnight during the autumn equinox, its petals collecting moonlight that can later be harvested for illumination spells.',1),
+(9,3,'The Lost Secrets of Crystal Magic','Cassandra Clearwater','Each crystal resonates at a frequency that corresponds to different planes of existence. The amethyst, for example, vibrates in harmony with the dream realm.',1),
+(10,2,'Temporal Enchantments','Chronos Timewinder','To bend time is not to break it, but to understand that past, present, and future exist simultaneously, separated only by our limited perception.',0),
+(11,3,'The Illusionist\'s Reality','Mirage Shadowweaver','The strongest illusions are not those that deceive the eyes, but those that whisper truths to the heart that the mind is eager to believe.',1),
+(12,3,'Secrets of the Blood Moon Rituals','Crimson Nightshade','When the moon bleeds red, the veil between worlds thins. Speak not your true name during these hours, lest wandering spirits claim it.',1),
+(13,2,'The Necromancer\'s Ethical Dilemmas','Mortimer Graves','The distinction between communing with the deceased and disturbing their rest lies in intention and respect. Always ask, never command.',0),
+(14,2,'Transmutation Fundamentals','Aurelius Goldmaker','All matter yearns to be something else. The alchemist merely listens to these whispers and facilitates the object\'s true desire.',1),
+(15,3,'The Djinn\'s Bargain','Zephyr Wishbinder','The ancient pact requires precise language above all else. Remember that \'until\' does not mean the same as \'unless\', and a misplaced comma may cost your soul.',1),
+(16,4,'Secrets of Shadow Binding','Umbra Darkweaver','Shadows are not absences of light but manifestations of another realm pressing against our own. They can be gathered and woven like the finest silk.',0),
+(17,1,'The Dragon Speaker\'s Codex','Drakonos Flameheart','The draconic tongue contains seventeen words for \'treasure\', each denoting not just the composition of the hoard but the manner in which it was acquired.',1),
+(18,3,'Mystical Beasts and Where Their Powers Lie','Fauna Beastwhisperer','The manticore\'s sting carries not just venom but memories. Those who survive an encounter often report vivid recollections of lives they never lived.',0),
+(19,1,'The Astral Traveler\'s Handbook','Celeste Starwalker','Anchoring your physical form before projection is essential. Three drops of blood on silver ensures your spirit can find its way home.',1),
+(20,3,'Secrets of the Fae Courts','Puck Wildbloom','Never eat what is offered in the Fae realm, unless you wish to return. Time moves differently beneath their twilight sky—a minute there could be years here.',1),
+(21,1,'Urban Magic: Spells for the Modern Witch','Rowan Citycraft','Subway tunnels follow the same patterns as ancient ley lines. The rumble of trains strengthens earth magic, while the electrical systems amplify lightning spells.',0),
+(22,2,'Divination Through Dreams','Luna Dreamseeker','True prophetic visions arrive not during REM sleep but in the moments between wakefulness and slumber, when the mind is most receptive to cosmic whispers.',1),
+(23,4,'Charms for the Charming','Dazzle Spellsmith','Enchantment is not about domination but gentle suggestion. The subject should never feel the nudge, only the natural desire to follow a new course.',1),
+(24,4,'The Golem Maker\'s Manual','Clay Animatriss','Life requires more than shape and movement. The true secret lies in the name, written on parchment and placed within the heart of your creation.',0),
+(25,4,'Healing Beyond the Physical Realm','Althea Soulsoothe','Wounds of the spirit manifest in the body. To truly heal, one must first identify which emotional injury has taken physical form.',1),
+(26,3,'The Art of Weather Working','Storm Skydancer','The winds have memories and grudges. Always introduce yourself to a new sky before attempting to change its temperament.',1),
+(27,4,'Forbidden Transformations','Lupine Moonwalker','The first transformation is always the most painful. Your bones will remember their original shape and fight to return—you must convince them of their new purpose.',0),
+(28,1,'The Book of Infinite Doorways','Portal Keymaster','Every mirror faces another mirror somewhere in the cosmos. Find the correct angle of reflection, and you can step between them.',1),
+(29,3,'Curses and Their Ethical Applications','Hex Justiceweaver','A true curse is not cast in anger but in balance. It should provide opportunity for redemption, lest it rebound upon the caster threefold.',1),
+(30,3,'The Witch\'s Garden: Magical Botany','Flora Rootwielder','Plants speak in chemical language. Learn to translate their signals, and they will warn you of dangers, point to hidden treasures, and reveal ancient secrets of the soil.',0);
 /*!40000 ALTER TABLE `books` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -119,6 +122,38 @@ CREATE TABLE `cache_locks` (
 LOCK TABLES `cache_locks` WRITE;
 /*!40000 ALTER TABLE `cache_locks` DISABLE KEYS */;
 /*!40000 ALTER TABLE `cache_locks` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `categories`
+--
+
+DROP TABLE IF EXISTS `categories`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `categories` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `emoji` varchar(10) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `categories_name_unique` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `categories`
+--
+
+LOCK TABLES `categories` WRITE;
+/*!40000 ALTER TABLE `categories` DISABLE KEYS */;
+INSERT INTO `categories` VALUES
+(1,'Gryffindor','🦁','2025-04-10 16:45:59','2025-04-10 16:45:59'),
+(2,'Hufflepuff','🦡','2025-04-10 16:45:59','2025-04-10 16:45:59'),
+(3,'Ravenclaw','🦅','2025-04-10 16:45:59','2025-04-10 16:45:59'),
+(4,'Slytherin','🐍','2025-04-10 16:45:59','2025-04-10 16:45:59');
+/*!40000 ALTER TABLE `categories` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -222,7 +257,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) NOT NULL,
   `batch` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -235,7 +270,13 @@ INSERT INTO `migrations` VALUES
 (1,'0001_01_01_000000_create_users_table',1),
 (2,'0001_01_01_000001_create_cache_table',1),
 (3,'0001_01_01_000002_create_jobs_table',1),
-(4,'2025_03_21_222426_books',1);
+(4,'2025_03_21_222426_books',1),
+(5,'2025_03_21_222426_books',1),
+(6,'2025_04_09_185750_create_table_questions',1),
+(7,'2025_04_10_161847_create_categories_table',2),
+(8,'2025_04_10_165235_import_data',1),
+(9,'2025_04_10_165235_import_data',1),
+(10,'2025_04_10_182751_add_category_id_to_books_table',1);
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -261,6 +302,43 @@ CREATE TABLE `password_reset_tokens` (
 LOCK TABLES `password_reset_tokens` WRITE;
 /*!40000 ALTER TABLE `password_reset_tokens` DISABLE KEYS */;
 /*!40000 ALTER TABLE `password_reset_tokens` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `questions`
+--
+
+DROP TABLE IF EXISTS `questions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `questions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `question` varchar(255) NOT NULL,
+  `answer` varchar(100) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `questions`
+--
+
+LOCK TABLES `questions` WRITE;
+/*!40000 ALTER TABLE `questions` DISABLE KEYS */;
+INSERT INTO `questions` VALUES
+(1,'¿Cuál es el apellido de soltera de la madre de Harry Potter?','Evans','2025-04-09 19:43:15','2025-04-09 19:43:15'),
+(2,'¿Qué hechizo utiliza Voldemort para asesinar a los padres de Harry?','Avada','2025-04-09 19:43:15','2025-04-09 19:43:15'),
+(3,'¿Cómo se llama el hipogrifo que ayuda a Sirius Black a escapar?','Buckbeak','2025-04-09 19:43:15','2025-04-09 19:43:15'),
+(4,'¿Qué forma tiene el patronus de Harry Potter?','Ciervo','2025-04-09 19:43:15','2025-04-09 19:43:15'),
+(5,'¿Cuál es el nombre del elfo doméstico de la familia Black?','Kreacher','2025-04-09 19:43:15','2025-04-09 19:43:15'),
+(6,'¿Qué casa de Hogwarts pertenece Luna Lovegood?','Ravenclaw','2025-04-09 19:43:15','2025-04-09 19:43:15'),
+(7,'¿Cómo se llama el perro de tres cabezas que custodia la piedra filosofal?','Fluffy','2025-04-09 19:43:15','2025-04-09 19:43:15'),
+(8,'¿Qué objeto usa Dumbledore para guardar sus recuerdos?','Pensadero','2025-04-09 19:43:15','2025-04-09 19:43:15'),
+(9,'¿Qué criatura custodia el banco Gringotts?','Duende','2025-04-09 19:43:15','2025-04-09 19:43:15'),
+(10,'¿Cómo se llama la lechuza de Harry Potter?','Hedwig','2025-04-09 19:43:15','2025-04-09 19:43:15');
+/*!40000 ALTER TABLE `questions` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -334,4 +412,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2025-03-22 18:51:26
+-- Dump completed on 2025-04-10 18:59:50

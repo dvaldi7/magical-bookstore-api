@@ -12,12 +12,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('questions', function (Blueprint $table) {
-            $table->integer('id')->primary()->autoIncrement();
-            $table->string('question', 255);
-            $table->string('answer', 100);
-            $table->timestamps();
-        });        
+        // import data from sql file backup
+        DB::unprepared(file_get_contents('App/../Application/MariaDB/ravenclaw.sql'));
     }
 
     /**
@@ -25,6 +21,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('questions');
+        //
     }
 };
