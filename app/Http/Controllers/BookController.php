@@ -98,7 +98,7 @@ class BookController extends Controller
             $books = DB::table('books as b')
                 ->join('categories as c', 'b.category_id', '=', 'c.id')                
                 ->select('b.id', 'b.title', 'b.author', 'b.description', 'b.status', 'c.name as category_name', 'c.emoji')
-                ->where('author', 'LIKE', "%$title%")
+                ->where('title', 'LIKE', "%$title%")
                 ->get();
 
             // Check if any books were found
