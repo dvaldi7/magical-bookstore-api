@@ -11,7 +11,7 @@ class Book extends Model
 
     protected $table = 'books';
     protected $fillable = ['title', 'author', 'description', 'status'];
-    public $timestamps = true; // Ensure timestamps are managed by Eloquent
+    public $timestamps = false;
 
     public function category()
     {
