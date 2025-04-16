@@ -70,7 +70,6 @@ class QuestionController extends Controller
 
         if ($unlocked === $book->status) {
             return response()->json([
-                'book' => $book,
                 'message' => 'Book is already unlocked',
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
