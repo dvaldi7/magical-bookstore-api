@@ -17,35 +17,42 @@ class QuestionController extends Controller
      */
     public function getRandomQuestion(Request $request): JsonResponse
     {
-        $bookId = $request->input('book_id');
+        try {
+            $bookId = $request->input('book_id');
 
-        if (! $bookId) {
+            if (! $bookId) {
+                return response()->json([
+                    'message' => 'Book parameter is required',
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+            $book = Book::where('id', $bookId)->first();
+
+            if (! $book) {
+                return response()->json([
+                    'message' => $book, // 'Book not found',
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+            $randomQuestion = Question::inRandomOrder()->first();
+
+            if ($randomQuestion) {
+                return response()->json([
+                    'id' => $randomQuestion->id,
+                    'question' => $randomQuestion->question,
+                ], Response::HTTP_OK);
+            }
+
             return response()->json([
-                'message' => 'Book parameter is required',
+                'message' => 'No questions found',
             ], Response::HTTP_NOT_FOUND);
-        }
 
-        $book = Book::where('id', $bookId)->first();
-
-        if (! $book) {
+        } catch (\Throwable $th) {
             return response()->json([
-                'message' => $book, // 'Book not found',
-            ], Response::HTTP_NOT_FOUND);
-        }
-
-        $randomQuestion = Question::inRandomOrder()->first();
-
-        if ($randomQuestion) {
-            return response()->json([
-                'id' => $randomQuestion->id,
-                'question' => $randomQuestion->question,
-            ], Response::HTTP_OK);
-        }
-
-        return response()->json([
-            'message' => 'No questions found',
-        ], Response::HTTP_NOT_FOUND);
-
+                'message' => 'An error occurred while getting the question',
+                'error'   => $th->getMessage()
+            ], 500); // 500 = Internal Server Error
+        }        
     }
 
     public function validateAnswer(Request $request): JsonResponse
