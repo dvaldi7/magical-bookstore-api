@@ -136,6 +136,50 @@ This document establishes a clear contract between frontend and backend systems 
 }
 ```
 
+### 5. Lock a book again
+**Endpoint**: `POST /questions/unlock`
+
+**5.1 Case with a good params**
+
+**Payload:**
+```json
+{
+  "book_id":"2"
+}
+```
+**Response:** ✅ Success (200 OK)
+```json
+{
+  "message": "Book unlocked successfully"
+}
+```
+**5.2 Case with a bad type params**
+**Payload:**
+```json
+{
+  "book_id":"f"
+}
+```
+**Response:** ⚠️ Not Found (404 Not Found)
+```json
+{
+  "message": "Book unlocked successfully"
+}
+```
+**5.3 Case with a bookId params is already blocked**
+**Payload:**
+```json
+{
+  "book_id":"2"
+}
+```
+**Response:** ⚠️ Not Found (422 Not Found)
+```json
+{
+ "message": "Book is already locked"
+}
+```
+
 ## Notes
 All responses are in JSON format
 
