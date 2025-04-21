@@ -11,3 +11,4 @@ Route::get('/books/{id}', [BookController::class, 'show']);
 
 Route::get('/questions/random', [QuestionController::class, 'getRandomQuestion']);
 Route::post('/questions/validate-answer', [QuestionController::class, 'validateAnswer']);
+Route::post('/questions/unlock', [QuestionController::class, 'unlockBook']);

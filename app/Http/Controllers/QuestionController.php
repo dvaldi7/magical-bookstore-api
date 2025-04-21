@@ -50,9 +50,9 @@ class QuestionController extends Controller
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'An error occurred while getting the question',
-                'error'   => $th->getMessage()
+                'error' => $th->getMessage(),
             ], 500); // 500 = Internal Server Error
-        }        
+        }
     }
 
     public function validateAnswer(Request $request): JsonResponse
@@ -114,18 +114,63 @@ class QuestionController extends Controller
         }
 
         try {
-            $book->status = $unlocked;            
+            $book->status = $unlocked;
             $book->save();
 
             return response()->json([
                 'message' => 'Book unlocked successfully',
             ], Response::HTTP_OK);
-    
+
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'Failed to unlock book or book not found/already unlocked',
-                'error'   => $th->getMessage()
-            ], Response::HTTP_NOT_FOUND);    
+                'error' => $th->getMessage(),
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+    }
+
+    /**
+     * Unlock a book by its ID.
+     */
+    public function unlockBook(Request $request): JsonResponse
+    {
+        try {
+            $validatedData = $request->validate([
+                'book_id' => 'required|integer|exists:books,id',
+            ], [
+                'book_id.required' => 'The param book ID is required.',
+                'book_id.integer' => 'The param book ID must be an integer.',
+                'book_id.exists' => 'The param selected book ID is invalid.',
+            ]);
+
+            $bookId = $validatedData['book_id'];
+
+            $book = Book::findOrFail($bookId);
+
+            if ($book->status === 1) {
+                return response()->json([
+                    'message' => 'Book is already locked',
+                ], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+
+            $book->status = 1;
+            $book->save();
+
+            return response()->json([
+                'message' => 'Book unlocked successfully',
+            ], Response::HTTP_OK);
+
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Error de validación',
+                'errors' => $e->validator->errors(),
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'Failed to unlock book or book not found/already unlocked',
+                'error' => $th->getMessage(),
+            ], Response::HTTP_NOT_FOUND);
         }
 
     }
