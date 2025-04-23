@@ -328,16 +328,16 @@ CREATE TABLE `questions` (
 LOCK TABLES `questions` WRITE;
 /*!40000 ALTER TABLE `questions` DISABLE KEYS */;
 INSERT INTO `questions` VALUES
-(1,'¿Cuál es el apellido de soltera de la madre de Harry Potter?','Evans','2025-04-09 19:43:15','2025-04-09 19:43:15'),
-(2,'¿Qué hechizo utiliza Voldemort para asesinar a los padres de Harry?','Avada','2025-04-09 19:43:15','2025-04-09 19:43:15'),
-(3,'¿Cómo se llama el hipogrifo que ayuda a Sirius Black a escapar?','Buckbeak','2025-04-09 19:43:15','2025-04-09 19:43:15'),
-(4,'¿Qué forma tiene el patronus de Harry Potter?','Ciervo','2025-04-09 19:43:15','2025-04-09 19:43:15'),
-(5,'¿Cuál es el nombre del elfo doméstico de la familia Black?','Kreacher','2025-04-09 19:43:15','2025-04-09 19:43:15'),
-(6,'¿Qué casa de Hogwarts pertenece Luna Lovegood?','Ravenclaw','2025-04-09 19:43:15','2025-04-09 19:43:15'),
-(7,'¿Cómo se llama el perro de tres cabezas que custodia la piedra filosofal?','Fluffy','2025-04-09 19:43:15','2025-04-09 19:43:15'),
-(8,'¿Qué objeto usa Dumbledore para guardar sus recuerdos?','Pensadero','2025-04-09 19:43:15','2025-04-09 19:43:15'),
-(9,'¿Qué criatura custodia el banco Gringotts?','Duende','2025-04-09 19:43:15','2025-04-09 19:43:15'),
-(10,'¿Cómo se llama la lechuza de Harry Potter?','Hedwig','2025-04-09 19:43:15','2025-04-09 19:43:15');
+(1,"What was Harry Potter's mother's maiden name?","Evans",'2025-04-09 19:43:15','2025-04-09 19:43:15'),
+(2,"What spell did Voldemort use to kill Harry's parents?","Avada",'2025-04-09 19:43:15','2025-04-09 19:43:15'),
+(3,"What is the name of the hippogriff that helps Sirius Black escape?","Buckbeak",'2025-04-09 19:43:15','2025-04-09 19:43:15'),
+(4,"What form does Harry Potter's patronus take?","Stag",'2025-04-09 19:43:15','2025-04-09 19:43:15'),
+(5,"What is the name of the Black family's house-elf?","Kreacher",'2025-04-09 19:43:15','2025-04-09 19:43:15'),
+(6,"Which Hogwarts house does Luna Lovegood belong to?","Ravenclaw",'2025-04-09 19:43:15','2025-04-09 19:43:15'),
+(7,"What is the name of the three-headed dog that guards the Philosopher's Stone?","Fluffy",'2025-04-09 19:43:15','2025-04-09 19:43:15'),
+(8,"What object does Dumbledore use to store his memories?","Pensieve",'2025-04-09 19:43:15','2025-04-09 19:43:15'),
+(9,"What creature guards the Gringotts bank?","Goblin",'2025-04-09 19:43:15','2025-04-09 19:43:15'),
+(10,"What is the name of Harry Potter's owl?","Hedwig",'2025-04-09 19:43:15','2025-04-09 19:43:15');
 /*!40000 ALTER TABLE `questions` ENABLE KEYS */;
 UNLOCK TABLES;
 
