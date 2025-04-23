@@ -133,7 +133,7 @@ class QuestionController extends Controller
     /**
      * Unlock a book by its ID.
      */
-    public function unlockBook(Request $request): JsonResponse
+    public function lockBook(Request $request): JsonResponse
     {
         try {
             $validatedData = $request->validate([
@@ -158,7 +158,7 @@ class QuestionController extends Controller
             $book->save();
 
             return response()->json([
-                'message' => 'Book unlocked successfully',
+                'message' => 'Book locked successfully',
             ], Response::HTTP_OK);
 
         } catch (ValidationException $e) {
@@ -168,7 +168,7 @@ class QuestionController extends Controller
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         } catch (\Throwable $th) {
             return response()->json([
-                'message' => 'Failed to unlock book or book not found/already unlocked',
+                'message' => 'Failed to lock book or book not found/already locked',
                 'error' => $th->getMessage(),
             ], Response::HTTP_NOT_FOUND);
         }
