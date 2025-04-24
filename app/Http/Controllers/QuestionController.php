@@ -113,21 +113,9 @@ class QuestionController extends Controller
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        try {
-            $book->status = $unlocked;
-            $book->save();
-
-            return response()->json([
-                'message' => 'Book unlocked successfully',
-            ], Response::HTTP_OK);
-
-        } catch (\Throwable $th) {
-            return response()->json([
-                'message' => 'Failed to unlock book or book not found/already unlocked',
-                'error' => $th->getMessage(),
-            ], Response::HTTP_NOT_FOUND);
-        }
-
+        return response()->json([
+            'message' => 'Book unlocked successfully',
+        ], Response::HTTP_OK);
     }
 
     /**
