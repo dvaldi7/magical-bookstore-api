@@ -1,34 +1,47 @@
-FROM php:8.3-cli
+FROM php:8.3-apache
 
-# Instalar dependencias del sistema necesarias
-RUN apt-get update && apt-get install -y \
-    git \
-    unzip \
-    libicu-dev \
-    libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    libonig-dev \
-    zip \
-    && docker-php-ext-install pdo_mysql intl gd
+# Argumentos
+ARG TIMEZONE="Europe/Madrid"
+ARG USER_ID=1000
+ARG GROUP_ID=1000
 
-# Instalar Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
-# Establecer directorio de trabajo
-WORKDIR /app
+# Set working directory
+WORKDIR /var/www
 
 # Copiar proyecto
-COPY . .
+COPY . /var/www/
 
-# Instalar dependencias de Laravel
-RUN composer install --no-dev --optimize-autoloader
+# Set timezone
+RUN ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && echo ${TIMEZONE} > /etc/timezone
 
-# Generar cachés de Laravel (optimiza en producción)
-RUN php artisan config:clear && php artisan route:clear && php artisan view:clear
+# Crear usuario para evitar problemas de permisos
+RUN addgroup --gid ${GROUP_ID} appgroup \
+    && adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} appuser
 
-# Exponer el puerto que Render usa (10000)
+# Instalar dependencias de sistema
+RUN apt update && apt install -y \
+    libicu-dev git unzip zlib1g-dev libpng-dev libjpeg-dev libfreetype6-dev libwebp-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Extensiones PHP necesarias
+RUN docker-php-ext-install pdo_mysql pdo_pgsql intl gd \
+    && docker-php-ext-configure gd --with-jpeg --with-webp --with-freetype
+
+# Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Configurar Apache (opcional, si tienes tus configs)
+COPY Application/000-default.conf /etc/apache2/sites-available/000-default.conf
+COPY Application/default-ssl.conf /etc/apache2/sites-available/default-ssl.conf
+
+# Cambiar permisos
+RUN chown -R appuser:appgroup /var/www
+
+USER appuser
+
+# Exponer puerto que Render espera
 EXPOSE 10000
 
-# Comando de arranque (Render necesita host 0.0.0.0 y puerto 10000)
-CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=10000
+# Comando para arrancar Laravel en runtime (cuando se levanta el contenedor)
+CMD php artisan migrate --force && php artisan serve --host 0.0.0.0 --port 10000
+
