@@ -4,6 +4,8 @@ FROM php:8.3-apache
 ARG TIMEZONE="Europe/Madrid"
 ARG USER_ID=1000
 ARG GROUP_ID=1000
+ARG SYSTEM_USER="appuser"
+ARG SYSTEM_GROUP="appgroup"
 
 # Set working directory
 WORKDIR /var/www
@@ -12,13 +14,14 @@ WORKDIR /var/www
 COPY . /var/www/
 
 # Set timezone
-RUN ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && echo ${TIMEZONE} > /etc/timezone
+RUN ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && echo ${TIMEZONE} > /etc/timezone \
+    && printf '[PHP]\ndate.timezone = "%s"\n' ${TIMEZONE} > /usr/local/etc/php/conf.d/tzone.ini
 
-# Crear usuario para evitar problemas de permisos
-RUN addgroup --gid ${GROUP_ID} appgroup \
-    && adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} appuser
+# Crear usuario y grupo para evitar problemas de permisos
+RUN addgroup --gid ${GROUP_ID} ${SYSTEM_GROUP} \
+    && adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${SYSTEM_USER}
 
-# Instalar dependencias de sistema
+# Instalar dependencias del sistema
 RUN apt update && apt install -y \
     libicu-dev git unzip zlib1g-dev libpng-dev libjpeg-dev libfreetype6-dev libwebp-dev \
     && rm -rf /var/lib/apt/lists/*
@@ -33,17 +36,17 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Instalar dependencias de Laravel
 RUN composer install --no-dev --optimize-autoloader
 
-# Configurar Apache (opcional, si tienes tus configs)
+# Configurar Apache
 COPY Application/000-default.conf /etc/apache2/sites-available/000-default.conf
 COPY Application/default-ssl.conf /etc/apache2/sites-available/default-ssl.conf
 
 # Cambiar permisos
-RUN chown -R appuser:appgroup /var/www
+RUN chown -R ${SYSTEM_USER}:${SYSTEM_GROUP} /var/www
 
-USER appuser
+USER ${USER_ID}
 
 # Exponer puerto que Render espera
 EXPOSE 10000
 
-# Comando para arrancar Laravel en runtime (sin migraciones)
+# Comando para arrancar Laravel en runtime
 CMD php artisan serve --host 0.0.0.0 --port 10000
