@@ -30,6 +30,9 @@ RUN docker-php-ext-install pdo_mysql pdo_pgsql intl gd \
 # Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Instalar dependencias de Laravel
+RUN composer install --no-dev --optimize-autoloader
+
 # Configurar Apache (opcional, si tienes tus configs)
 COPY Application/000-default.conf /etc/apache2/sites-available/000-default.conf
 COPY Application/default-ssl.conf /etc/apache2/sites-available/default-ssl.conf
@@ -42,6 +45,5 @@ USER appuser
 # Exponer puerto que Render espera
 EXPOSE 10000
 
-# Comando para arrancar Laravel en runtime (cuando se levanta el contenedor)
-CMD php artisan migrate --force && php artisan serve --host 0.0.0.0 --port 10000
-
+# Comando para arrancar Laravel en runtime (sin migraciones)
+CMD php artisan serve --host 0.0.0.0 --port 10000
