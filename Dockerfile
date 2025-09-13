@@ -21,10 +21,12 @@ RUN ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && echo ${TIMEZONE} >
 RUN addgroup --gid ${GROUP_ID} ${SYSTEM_GROUP} \
     && adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${SYSTEM_USER}
 
-# Instalar dependencias del sistema
+# Instalar dependencias de sistema
 RUN apt update && apt install -y \
     libicu-dev git unzip zlib1g-dev libpng-dev libjpeg-dev libfreetype6-dev libwebp-dev \
+    libpq-dev \
     && rm -rf /var/lib/apt/lists/*
+
 
 # Extensiones PHP necesarias
 RUN docker-php-ext-install pdo_mysql pdo_pgsql intl gd \
