@@ -1,21 +1,10 @@
-# ========================
-# Dockerfile para Laravel
-# ========================
+# Stage 0: Base PHP + Apache
+FROM php:8.3-apache AS base
 
-# Imagen base con PHP y Apache
-FROM php:8.3-apache
-
-# Variables de entorno
-ENV APACHE_DOCUMENT_ROOT /var/www/public
-
-# Instalar extensiones de PHP necesarias
+# Instalar extensiones necesarias y utilidades
 RUN apt-get update && apt-get install -y \
-    libzip-dev \
-    unzip \
-    git \
-    curl \
-    libonig-dev \
-    && docker-php-ext-install pdo_mysql mbstring zip \
+    libzip-dev zip unzip git curl libonig-dev \
+    && docker-php-ext-install pdo pdo_mysql mbstring zip \
     && a2enmod rewrite
 
 # Configurar Apache para Laravel
@@ -23,27 +12,36 @@ RUN sed -ri -e 's!/var/www/html!/var/www/public!g' /etc/apache2/sites-available/
     && sed -i '/<Directory \/var\/www\/public>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf \
     && echo "DirectoryIndex index.php" >> /etc/apache2/mods-enabled/dir.conf
 
-# Crear usuario appuser
+# Crear usuario para Laravel
 RUN groupadd -r appgroup && useradd -r -g appgroup appuser \
-    && chown -R appuser:appgroup /var/www
+    && mkdir -p /var/www && chown -R appuser:appgroup /var/www
 
-# Copiar la aplicación
-COPY . /var/www
+WORKDIR /var/www
 
-# Cambiar permisos
+# Stage 1: Composer
+FROM composer:2 AS composer
+WORKDIR /var/www
+COPY --from=base /var/www /var/www
+COPY composer.json composer.lock* ./
+RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+# Stage 2: Final image
+FROM base AS final
+WORKDIR /var/www
+
+# Copiar la aplicación y vendor desde el stage de composer
+COPY --from=composer /var/www /var/www
+
+# Ajustar permisos
 RUN chown -R appuser:appgroup /var/www \
     && chmod -R 755 /var/www
 
-# Instalar Composer y dependencias
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+# Cambiar a usuario no root
 USER appuser
-RUN composer install --no-dev --optimize-autoloader
 
-# Volver al usuario root para Apache
-USER root
-
-# Exponer puerto que Render usa
+# Exponer el puerto de Render
 EXPOSE 10000
 
-# Comando de inicio
+# Comando por defecto
 CMD ["apache2-foreground"]
+
