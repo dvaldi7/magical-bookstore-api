@@ -1,40 +1,40 @@
-# Use the official PHP image with Apache as the base
+# Stage 1: Base de PHP con Apache
 FROM php:8.3-apache
 
-# Set the working directory to the project's root inside the container
-WORKDIR /var/www/html
-
-# Install necessary system packages and PHP extensions
+# Habilitar módulos de Apache y extensiones de PHP
 RUN apt-get update && apt-get install -y \
     libzip-dev zip unzip git curl \
     && docker-php-ext-install pdo pdo_mysql \
     && a2enmod rewrite
 
-# Copy all project files from your local directory to the container's Apache web root.
+# Copiar todos los archivos del proyecto a la raíz de la app
 COPY . /var/www/html
 
-# Install Composer
+# Establecer el directorio de trabajo
+WORKDIR /var/www/html
+
+# Instalar Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Install Composer dependencies.
+# Instalar dependencias de Composer
 RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
-# Create the 'storage' and 'bootstrap/cache' directories if they don't exist
+# Crear directorios de 'storage' y 'cache' si no existen
 RUN mkdir -p storage bootstrap/cache
 
-# Adjust permissions for Apache to be able to read and write to the necessary directories
+# Ajustar los permisos
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chown -R www-data:www-data /var/www/html
 
-# Configure Apache's DocumentRoot to point to Laravel's public directory.
-# This ensures Apache serves the application from the correct entry point.
-# It also enables .htaccess overrides for pretty URLs.
-RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf \
-    && sed -i '/<Directory \/var\/www\/html\/public>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf \
-    && echo "DirectoryIndex index.php" >> /etc/apache2/mods-enabled/dir.conf
+# Copiar el archivo de configuración de Apache y habilitarlo
+COPY vhost.conf /etc/apache2/sites-available/000-default.conf
 
-# Expose port 80 to the outside world
+# Reiniciar Apache para que tome los cambios
+RUN a2dissite 000-default.conf
+RUN a2ensite 000-default.conf
+
+# Exponer el puerto
 EXPOSE 80
 
-# Start Apache in the foreground
+# Iniciar Apache en primer plano
 CMD ["apache2-foreground"]
