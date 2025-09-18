@@ -1,41 +1,37 @@
-# Use a base image with PHP and FPM
+# Usa una imagen base con PHP y FPM
 FROM php:8.3-fpm
 
-# Install necessary system packages
+# Instala los paquetes necesarios del sistema
 RUN apt-get update && apt-get install -y \
     nginx git curl libzip-dev zip unzip \
     && docker-php-ext-install pdo pdo_mysql \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy your project files into the container
+# Copia los archivos de tu proyecto al contenedor
 COPY . /var/www/html
 
-# Set the working directory
+# Establece el directorio de trabajo
 WORKDIR /var/www/html
 
-# Install Composer
+# Instala Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Install Composer dependencies
+# Instala las dependencias de Composer
 RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
-# Create necessary directories and set permissions
+# Crea los directorios necesarios y establece los permisos
 RUN mkdir -p /var/www/html/storage /var/www/html/bootstrap/cache \
     && chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Copy the Nginx configuration file
-COPY nginx.conf /etc/nginx/sites-available/default
-
-# Remove default Nginx site configuration
+# Elimina el sitio predeterminado de Nginx y copia el tuyo
 RUN rm /etc/nginx/sites-enabled/default
-
-# Create a symbolic link to enable the custom configuration
+COPY nginx.conf /etc/nginx/sites-available/default
 RUN ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
-# Expose port 80
+# Expone el puerto 80
 EXPOSE 80
 
-# Define the command to run when the container starts
-# This command will run both Nginx and PHP-FPM in the foreground
-CMD service nginx start && php-fpm
+# Define el comando para iniciar el contenedor
+# Esto inicia PHP-FPM y Nginx en primer plano
+CMD ["/bin/sh", "-c", "service nginx start && php-fpm"]
