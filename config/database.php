@@ -1,5 +1,8 @@
 <?php
 
+use Illuminate\Support\Str;   // 👈 añade esta línea
+
+
 return [
 
     'default' => env('DB_CONNECTION', 'mysql'),
