@@ -1,5 +1,5 @@
 # Stage 1: Base de PHP con Apache
-FROM php:8.3-apache AS base
+FROM php:8.3-apache
 
 # Habilitar módulos necesarios
 RUN apt-get update && apt-get install -y \
@@ -16,24 +16,26 @@ RUN sed -ri -e 's!/var/www/html!/var/www/public!g' /etc/apache2/sites-available/
 RUN groupadd -r appgroup && useradd -r -g appgroup appuser \
     && mkdir -p /var/www && chown -R appuser:appgroup /var/www
 
+# Configurar el directorio de trabajo
 WORKDIR /var/www
 
-# Copiar todo el proyecto. Esta es la clave para solucionar el problema.
+# Copiar todo el proyecto, incluyendo el directorio 'public'
 COPY . /var/www
 
-# Instalar dependencias de Composer
+# Instalar Composer para gestionar dependencias
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Instalar las dependencias de Composer.
 RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
-# Ajustar permisos
-RUN chown -R appuser:appgroup /var/www \
-    && chmod -R 755 /var/www
+# Ajustar permisos para que Apache pueda leer los archivos y la app pueda escribir en 'storage'
+RUN chown -R www-data:www-data /var/www \
+    && find /var/www -type f -exec chmod 644 {} \; \
+    && find /var/www -type d -exec chmod 755 {} \; \
+    && chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
-# Cambiar al usuario no root
-USER appuser
-
-# Exponer puerto 80
+# Exponer el puerto
 EXPOSE 80
 
-# Iniciar Apache en primer plano
+# Iniciar Apache
 CMD ["apache2-foreground"]
