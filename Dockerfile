@@ -1,4 +1,4 @@
-# Use a base image with PHP and FPM, as we'll use Nginx to serve the site
+# Use a base image with PHP and FPM
 FROM php:8.3-fpm
 
 # Install necessary system packages
@@ -27,9 +27,15 @@ RUN mkdir -p /var/www/html/storage /var/www/html/bootstrap/cache \
 # Copy the Nginx configuration file
 COPY nginx.conf /etc/nginx/sites-available/default
 
+# Remove default Nginx site configuration
+RUN rm /etc/nginx/sites-enabled/default
+
+# Create a symbolic link to enable the custom configuration
+RUN ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+
 # Expose port 80
 EXPOSE 80
 
 # Define the command to run when the container starts
-# This command will start both PHP-FPM and Nginx
-CMD service php8.3-fpm start && nginx -g "daemon off;"
+# This command will run both Nginx and PHP-FPM in the foreground
+CMD service nginx start && php-fpm
