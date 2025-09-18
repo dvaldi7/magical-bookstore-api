@@ -27,7 +27,6 @@ RUN apt update && apt install -y \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-
 # Extensiones PHP necesarias
 RUN docker-php-ext-install pdo_mysql pdo_pgsql intl gd \
     && docker-php-ext-configure gd --with-jpeg --with-webp --with-freetype
@@ -38,7 +37,10 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Instalar dependencias de Laravel
 RUN composer install --no-dev --optimize-autoloader
 
-# Configurar Apache
+# Habilitar mod_rewrite (necesario para Laravel)
+RUN a2enmod rewrite
+
+# Copiar config de Apache
 COPY Application/000-default.conf /etc/apache2/sites-available/000-default.conf
 COPY Application/default-ssl.conf /etc/apache2/sites-available/default-ssl.conf
 
@@ -50,5 +52,5 @@ USER ${USER_ID}
 # Exponer puerto que Render espera
 EXPOSE 10000
 
-# Comando para arrancar Laravel en runtime
-CMD php artisan serve --host 0.0.0.0 --port 10000
+# Apache será el que ejecute Laravel
+CMD ["apache2-foreground"]
