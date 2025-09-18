@@ -1,4 +1,4 @@
-# Stage 1: Base
+# Stage 1: Base de PHP con Apache
 FROM php:8.3-apache AS base
 
 # Habilitar módulos necesarios
@@ -18,27 +18,12 @@ RUN groupadd -r appgroup && useradd -r -g appgroup appuser \
 
 WORKDIR /var/www
 
-# Stage 2: Composer
-FROM composer:2 AS composer
-
-WORKDIR /var/www
-
-# Copiar composer files primero para aprovechar cache
-COPY composer.json composer.lock* /var/www/
-
-# Instalar dependencias
-RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
-
-# Stage 3: App final
-FROM base AS final
-
-WORKDIR /var/www
-
-# Copiar dependencias de composer
-COPY --from=composer /var/www/vendor /var/www/vendor
-
-# Copiar todo el proyecto
+# Copiar todo el proyecto. Esta es la clave para solucionar el problema.
 COPY . /var/www
+
+# Instalar dependencias de Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
 # Ajustar permisos
 RUN chown -R appuser:appgroup /var/www \
