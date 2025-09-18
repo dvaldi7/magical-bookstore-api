@@ -28,6 +28,9 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # Instalar las dependencias de Composer.
 RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
+# Crear los directorios 'storage' y 'bootstrap/cache' si no existen
+RUN mkdir -p /var/www/storage /var/www/bootstrap/cache
+
 # Ajustar permisos para que Apache pueda leer los archivos y la app pueda escribir en 'storage'
 RUN chown -R www-data:www-data /var/www \
     && find /var/www -type f -exec chmod 644 {} \; \
