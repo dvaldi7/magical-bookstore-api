@@ -1,56 +1,49 @@
+# ========================
+# Dockerfile para Laravel
+# ========================
+
+# Imagen base con PHP y Apache
 FROM php:8.3-apache
 
-# Argumentos
-ARG TIMEZONE="Europe/Madrid"
-ARG USER_ID=1000
-ARG GROUP_ID=1000
-ARG SYSTEM_USER="appuser"
-ARG SYSTEM_GROUP="appgroup"
+# Variables de entorno
+ENV APACHE_DOCUMENT_ROOT /var/www/public
 
-# Set working directory
-WORKDIR /var/www
+# Instalar extensiones de PHP necesarias
+RUN apt-get update && apt-get install -y \
+    libzip-dev \
+    unzip \
+    git \
+    curl \
+    libonig-dev \
+    && docker-php-ext-install pdo_mysql mbstring zip \
+    && a2enmod rewrite
 
-# Copiar proyecto
-COPY . /var/www/
+# Configurar Apache para Laravel
+RUN sed -ri -e 's!/var/www/html!/var/www/public!g' /etc/apache2/sites-available/000-default.conf \
+    && sed -i '/<Directory \/var\/www\/public>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf \
+    && echo "DirectoryIndex index.php" >> /etc/apache2/mods-enabled/dir.conf
 
-# Set timezone
-RUN ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && echo ${TIMEZONE} > /etc/timezone \
-    && printf '[PHP]\ndate.timezone = "%s"\n' ${TIMEZONE} > /usr/local/etc/php/conf.d/tzone.ini
+# Crear usuario appuser
+RUN groupadd -r appgroup && useradd -r -g appgroup appuser \
+    && chown -R appuser:appgroup /var/www
 
-# Crear usuario y grupo para evitar problemas de permisos
-RUN addgroup --gid ${GROUP_ID} ${SYSTEM_GROUP} \
-    && adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${SYSTEM_USER}
-
-# Instalar dependencias de sistema
-RUN apt update && apt install -y \
-    libicu-dev git unzip zlib1g-dev libpng-dev libjpeg-dev libfreetype6-dev libwebp-dev \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# Extensiones PHP necesarias
-RUN docker-php-ext-install pdo_mysql pdo_pgsql intl gd \
-    && docker-php-ext-configure gd --with-jpeg --with-webp --with-freetype
-
-# Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Instalar dependencias de Laravel
-RUN composer install --no-dev --optimize-autoloader
-
-# Habilitar mod_rewrite (necesario para Laravel)
-RUN a2enmod rewrite
-
-# Copiar config de Apache
-COPY Application/000-default.conf /etc/apache2/sites-available/000-default.conf
-COPY Application/default-ssl.conf /etc/apache2/sites-available/default-ssl.conf
+# Copiar la aplicación
+COPY . /var/www
 
 # Cambiar permisos
-RUN chown -R ${SYSTEM_USER}:${SYSTEM_GROUP} /var/www
+RUN chown -R appuser:appgroup /var/www \
+    && chmod -R 755 /var/www
 
-USER ${USER_ID}
+# Instalar Composer y dependencias
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+USER appuser
+RUN composer install --no-dev --optimize-autoloader
 
-# Exponer puerto que Render espera
+# Volver al usuario root para Apache
+USER root
+
+# Exponer puerto que Render usa
 EXPOSE 10000
 
-# Apache será el que ejecute Laravel
+# Comando de inicio
 CMD ["apache2-foreground"]
