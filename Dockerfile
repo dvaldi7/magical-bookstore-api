@@ -1,44 +1,41 @@
-# Stage 1: Base de PHP con Apache
+# Use the official PHP image with Apache as the base
 FROM php:8.3-apache
 
-# Habilitar módulos necesarios
+# Install necessary system packages and PHP extensions
 RUN apt-get update && apt-get install -y \
     libzip-dev zip unzip git curl \
     && docker-php-ext-install pdo pdo_mysql \
     && a2enmod rewrite
 
-# Cambiar DocumentRoot a /var/www/public
-RUN sed -ri -e 's!/var/www/html!/var/www/public!g' /etc/apache2/sites-available/000-default.conf \
-    && sed -i '/<Directory \/var\/www\/public>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf \
-    && echo "DirectoryIndex index.php" >> /etc/apache2/mods-enabled/dir.conf
+# Copy all project files from your local directory to the container's Apache web root.
+# This ensures that all files, including 'artisan', are present before Composer runs.
+COPY . /var/www/html
 
-# Crear usuario para seguridad
-RUN groupadd -r appgroup && useradd -r -g appgroup appuser \
-    && mkdir -p /var/www && chown -R appuser:appgroup /var/www
+# Set the working directory to the project's root inside the container
+WORKDIR /var/www/html
 
-# Configurar el directorio de trabajo
-WORKDIR /var/www
-
-# Copiar todo el proyecto, incluyendo el directorio 'public'
-COPY . /var/www
-
-# Instalar Composer para gestionar dependencias
+# Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Instalar las dependencias de Composer.
+# Install Composer dependencies. This will also run Laravel's post-autoload-dump scripts.
 RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
-# Crear los directorios 'storage' y 'bootstrap/cache' si no existen
-RUN mkdir -p /var/www/storage /var/www/bootstrap/cache
+# Create the 'storage' and 'bootstrap/cache' directories if they don't exist
+RUN mkdir -p storage bootstrap/cache
 
-# Ajustar permisos para que Apache pueda leer los archivos y la app pueda escribir en 'storage'
-RUN chown -R www-data:www-data /var/www \
-    && find /var/www -type f -exec chmod 644 {} \; \
-    && find /var/www -type d -exec chmod 755 {} \; \
-    && chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+# Adjust permissions for Apache to be able to read all files and write to the necessary directories
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+    && chown -R www-data:www-data /var/www/html
 
-# Exponer el puerto
+# Configure Apache's DocumentRoot to point to Laravel's public directory.
+# This prevents 404 errors by ensuring Apache serves the application from the correct entry point.
+# It also enables .htaccess overrides for pretty URLs.
+RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf \
+    && sed -i '/<Directory \/var\/www\/html\/public>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf \
+    && echo "DirectoryIndex index.php" >> /etc/apache2/mods-enabled/dir.conf
+
+# Expose port 80 to the outside world
 EXPOSE 80
 
-# Iniciar Apache
+# Start Apache in the foreground
 CMD ["apache2-foreground"]
