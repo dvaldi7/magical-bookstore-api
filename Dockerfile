@@ -19,21 +19,21 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # Instala las dependencias de Composer
 RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
-# Crea los directorios necesarios y establece los permisos
+# Crea los directorios necesarios y establece permisos
 RUN mkdir -p /var/www/html/storage /var/www/html/bootstrap/cache \
     && chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Configura Nginx para que use la ruta de PHP-FPM correcta
+# Configura Nginx
 RUN rm /etc/nginx/sites-enabled/default
 COPY nginx.conf /etc/nginx/sites-available/default
 RUN ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
-# Configura Supervisor para gestionar Nginx y PHP-FPM
+# Configura Supervisor
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Expon el puerto 80
+# Expone el puerto 80
 EXPOSE 80
 
-# Inicia Supervisor cuando el contenedor se ejecute
+# Inicia Supervisor
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
