@@ -23,8 +23,7 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-di
 RUN mkdir -p /var/www/html/storage /var/www/html/bootstrap/cache \
     && chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html \
-    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache \
-    && chmod -R 775 /var/www/html/public
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Verifica que index.php existe en public/
 RUN test -f /var/www/html/public/index.php || (echo "❌ ERROR: public/index.php no existe" && exit 1)
@@ -37,8 +36,8 @@ RUN ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 # Configuración de Supervisor
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Expone el puerto 80
-EXPOSE 80
+# Render asigna el puerto en la variable de entorno $PORT
+EXPOSE ${PORT}
 
 # Inicia Supervisor
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
