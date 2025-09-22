@@ -1,9 +1,8 @@
 #!/bin/bash
 set -e
 
-# Reemplaza ${PORT} en nginx.conf
-envsubst '${PORT}' < /etc/nginx/sites-available/default > /etc/nginx/sites-available/default.tmp
-mv /etc/nginx/sites-available/default.tmp /etc/nginx/sites-available/default
+# Sustituir la variable ${PORT} en la config de nginx por el valor real
+sed -i "s/\${PORT}/${PORT}/g" /etc/nginx/sites-available/default
 
-# Arranca supervisord
+# Iniciar supervisord (que a su vez arranca nginx y php-fpm)
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
